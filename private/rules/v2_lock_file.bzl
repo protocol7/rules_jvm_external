@@ -47,7 +47,7 @@ def _compute_lock_file_hash(lock_file_contents):
 
 def _to_m2_path(unpacked):
     version = unpacked["version"]
-    dir_version = getattr(unpacked, "dirVersion", version)
+    dir_version = unpacked.get("dirVersion", version)
     path = "{group}/{artifact}/{dir_version}/{artifact}-{version}".format(
         artifact = unpacked["artifactId"],
         group = unpacked["groupId"].replace(".", "/"),
