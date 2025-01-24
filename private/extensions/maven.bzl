@@ -149,14 +149,6 @@ def _check_repo_name(repo_name_2_module_name, repo_name, module_name):
     known_name = repo_name_2_module_name.get(repo_name)
     if known_name == None:
         repo_name_2_module_name[repo_name] = module_name
-        return
-
-    if module_name != known_name:
-        print("The maven repository '%s' is used in two different bazel modules, originally in '%s' and now in '%s'" % (
-            repo_name,
-            known_name,
-            module_name,
-        ))
 
 def _to_maven_coords(artifact):
     coords = "%s:%s" % (artifact.get("group"), artifact.get("artifact"))
