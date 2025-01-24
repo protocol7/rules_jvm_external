@@ -311,7 +311,19 @@ public class LockFileConverter {
         index = index + 7;
 
         // Skip over the variable-length build number.
-        index = pathSubstring.indexOf(".", index + 1);
+        // 1.0-20250122.150153-57798-source.jar
+        int dotIndex = pathSubstring.indexOf(".", index + 1);
+        int dashIndex = pathSubstring.indexOf("-", index + 1);
+        if (dotIndex == -1 && dashIndex == -1) {
+          throw new IllegalArgumentException(
+              String.format(
+                  "End of version not found in file name (%s). Current coordinates are %s",
+                  expectedFileName, coord));
+        } else if (dashIndex != -1 && dashIndex < dotIndex) {
+          index = dashIndex;
+        } else {
+          index = dotIndex;
+        }
 
         remainder = pathSubstring.substring(index);
         dirVersion = version;
