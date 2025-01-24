@@ -838,11 +838,14 @@ def make_coursier_dep_tree(
     cmd.extend(artifact_coordinates)
     if version_conflict_policy == "pinned":
         for coord in artifact_coordinates:
+            version = coord.split(",")[0].split(":")[2]
             # Undo any `,classifier=` and/or `,type=` suffix from `utils.artifact_coordinate`.
-            cmd.extend([
-                "--force-version",
-                ",".join([c for c in coord.split(",") if not c.startswith("classifier=") and not c.startswith("type=")]),
-            ])
+            # when using BOMs, the version may be empty, in which case we should not force the version
+            if version:
+                cmd.extend([
+                    "--force-version",
+                    ",".join([c for c in coord.split(",") if not c.startswith("classifier=") and not c.startswith("type=")]),
+                ])
     else:
         for coord in forced_versions:
             cmd.extend([
