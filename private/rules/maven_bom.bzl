@@ -1,5 +1,6 @@
 load("@bazel_features//:features.bzl", "bazel_features")
 load("//private/lib:coordinates.bzl", "unpack_coordinates")
+load(":jvm_import.bzl", "MavenCoordinateInfo")
 load(":maven_bom_fragment.bzl", "MavenBomFragmentInfo")
 load(":maven_publish.bzl", "maven_publish")
 load(":maven_utils.bzl", "generate_pom")
@@ -25,6 +26,8 @@ def _label(label_or_string):
     fail("Can only convert either labels or strings: %s" % label_or_string)
 
 def _maven_bom_impl(ctx):
+    jvm_import_coordinates = [ji[MavenCoordinateInfo].coordinates for ji in ctx.attr.jvm_imports]
+
     fragments = [f[MavenBomFragmentInfo] for f in ctx.attr.fragments]
 
     # Expand maven coordinates for any variables to be replaced.
@@ -33,7 +36,7 @@ def _maven_bom_impl(ctx):
     bom = generate_pom(
         ctx,
         coordinates = coordinates,
-        versioned_dep_coordinates = [f[MavenBomFragmentInfo].coordinates for f in ctx.attr.fragments],
+        versioned_dep_coordinates = [f[MavenBomFragmentInfo].coordinates for f in ctx.attr.fragments] + jvm_import_coordinates,
         pom_template = ctx.file.pom_template,
         out_name = "%s.xml" % ctx.label.name,
     )
@@ -58,6 +61,11 @@ _maven_bom = rule(
             providers = [
                 [MavenBomFragmentInfo],
             ],
+        ),
+        "jvm_imports": attr.label_list(
+            mandatory = False,
+            default = [],
+            providers = [MavenCoordinateInfo],
         ),
     },
 )
@@ -113,6 +121,7 @@ def maven_bom(
         name,
         maven_coordinates,
         java_exports,
+        jvm_imports = [],
         bom_pom_template = None,
         dependencies_maven_coordinates = None,
         dependencies_pom_template = None,
@@ -184,6 +193,7 @@ def maven_bom(
         maven_coordinates = maven_coordinates,
         pom_template = bom_pom_template,
         fragments = fragments,
+        jvm_imports = jvm_imports,
         tags = tags,
         testonly = testonly,
         visibility = visibility,

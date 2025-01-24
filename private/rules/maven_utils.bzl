@@ -41,6 +41,12 @@ def format_dep(unpacked, indent = 8, include_version = True):
             "    <scope>%s</scope>\n" % unpacked.scope,
         ])
 
+    if unpacked.classifier:
+        dependency.extend([
+            whitespace,
+            "    <classifier>%s</classifier>\n" % unpacked.classifier,
+        ])
+
     dependency.extend([
         whitespace,
         "</dependency>",
@@ -91,6 +97,7 @@ def generate_pom(
             groupId = unpacked.groupId,
             artifactId = unpacked.artifactId,
             type = unpacked.type,
+            classifier = unpacked.classifier,
             scope = new_scope,
             version = unpacked.version,
         )

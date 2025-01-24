@@ -13,6 +13,12 @@ load("//private/lib:coordinates.bzl", "to_external_form", "to_purl", "unpack_coo
 load("//private/lib:urls.bzl", "scheme_and_host")
 load("//settings:stamp_manifest.bzl", "StampManifestProvider")
 
+MavenCoordinateInfo = provider(
+    fields = {
+        "coordinates": "Maven coordinates for this part of the BOM",
+    },
+)
+
 def _jvm_import_impl(ctx):
     if not ctx.attr.jar and not ctx.attr.jars:
         fail("The `jar` attribute is mandatory.")
@@ -97,6 +103,9 @@ def _jvm_import_impl(ctx):
                 if JavaInfo in dep
             ],
             neverlink = ctx.attr.neverlink,
+        ),
+        MavenCoordinateInfo(
+            coordinates = ctx.attr.maven_coordinates,
         ),
     ] + additional_providers
 

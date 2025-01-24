@@ -48,8 +48,8 @@ def _unpack_rje_format(coords, parts):
         groupId = parts.get(0),
         artifactId = parts.get(1),
         type = parts.get(2),
-        scope = parts.get(3),
-        classifier = None,
+        scope = None,
+        classifier = parts.get(3),
         version = version,
     )
 

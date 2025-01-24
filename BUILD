@@ -39,3 +39,15 @@ alias(
     name = "generate_api_reference",
     actual = "//scripts:generate_api_reference",
 )
+
+# for testing maven_bom patching
+load("//private/rules:maven_bom.bzl", "maven_bom")
+
+maven_bom (
+    name = "foo",
+    maven_coordinates = "com.example:foo:1.0",
+    java_exports = [],
+    jvm_imports = [
+        "@rules_jvm_external_deps//:com_google_guava_guava",
+    ],
+)
